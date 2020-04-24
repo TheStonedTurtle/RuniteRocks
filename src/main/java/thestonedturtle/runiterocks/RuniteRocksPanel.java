@@ -32,8 +32,10 @@ import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
+import javax.annotation.Nullable;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import net.runelite.client.ui.DynamicGridLayout;
@@ -98,11 +100,50 @@ public class RuniteRocksPanel extends PluginPanel
 		listContainer.repaint();
 	}
 
+	public void updateRuniteRocks(final Collection<RuniteRock> runeRocks)
+	{
+		for (final RuniteRock runiteRock : runeRocks)
+		{
+			updateRuniteRock(runiteRock);
+		}
+
+		updateList();
+	}
+
+	public void updateRuniteRock(@Nullable final RuniteRock runeRock)
+	{
+		if (runeRock == null)
+		{
+			return;
+		}
+
+		final boolean currentWorld = runeRock.getWorld() == plugin.getTracker().getWorld();
+		for (TableRow row : rows)
+		{
+			if (runeRock.matches(row.getRuniteRock()))
+			{
+				rows.remove(row);
+				break;
+			}
+		}
+
+		rows.add(buildRow(runeRock.getWorld(), currentWorld, runeRock));
+	}
+
 	private void populate()
 	{
 		rows.clear();
 
-		//rows.add(buildRow(world, currentWorld, rock));
+		for (final WorldTracker tracker : plugin.getWorldMap().values())
+		{
+			final World world = tracker.getWorld();
+			final boolean currentWorld = world == plugin.getTracker().getWorld();
+
+			for (final RuniteRock rock : tracker.getRuniteRocks())
+			{
+				rows.add(buildRow(world, currentWorld, rock));
+			}
+		}
 
 		updateList();
 	}
