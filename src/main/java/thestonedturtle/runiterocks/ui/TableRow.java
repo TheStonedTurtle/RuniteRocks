@@ -65,7 +65,7 @@ public class TableRow extends JPanel
 	private static final Color MEMBERS_WORLD = new Color(210, 193, 53);
 	private static final Color FREE_WORLD = new Color(200, 200, 200);
 
-	private static final DateFormat TIME_FORMATTER = new SimpleDateFormat("hh:mm:ss");
+	private static final DateFormat TIME_FORMATTER = new SimpleDateFormat("h:mm:ss a");
 
 	private JLabel worldLabel;
 	private JLabel locationLabel;
@@ -217,10 +217,16 @@ public class TableRow extends JPanel
 		if (respawnCounter)
 		{
 			final Duration seconds = Duration.between(respawn, Instant.now());
-			String timer = seconds.isNegative() ? "-" : "";
-			timer += getReadableTimeElapsed(seconds).trim();
+			if (!seconds.isNegative())
+			{
+				respawnLabel.setText("Available");
+				respawnLabel.setForeground(ColorScheme.BRAND_ORANGE);
+				return;
+			}
+
+			final String timer = "-" + getReadableTimeElapsed(seconds).trim();
 			respawnLabel.setText(timer);
-			respawnLabel.setForeground(ColorScheme.DARK_GRAY_COLOR);
+			respawnLabel.setForeground(Color.LIGHT_GRAY);
 		}
 		else
 		{
