@@ -106,6 +106,10 @@ public class RuniteRocksPlugin extends Plugin
 	private net.runelite.api.World quickHopTargetWorld;
 	private int displaySwitcherAttempts = 0;
 
+	// Game state will change to loading between hopping and LOGGED_IN
+	// We need to ignore this state as the game loads with all Runite rocks available
+	private boolean isHopping = true;
+
 	@Override
 	protected void startUp() throws Exception
 	{
@@ -132,6 +136,8 @@ public class RuniteRocksPlugin extends Plugin
 			tracker = new WorldTracker(world);
 			worldMap.put(client.getWorld(), tracker);
 		}
+
+		isHopping = client.getGameState().equals(GameState.HOPPING);
 	}
 
 	@Override
@@ -143,6 +149,7 @@ public class RuniteRocksPlugin extends Plugin
 		worldMap.clear();
 		tracker = null;
 		spawnedRocks.clear();
+		isHopping = false;
 	}
 
 	@Subscribe
@@ -152,8 +159,14 @@ public class RuniteRocksPlugin extends Plugin
 		{
 			case LOADING:
 				spawnedRocks.clear();
+				if (isHopping)
+				{
+					return;
+				}
 				break;
 			case HOPPING:
+				isHopping = true;
+				// intentional fall through
 			case LOGIN_SCREEN:
 				processSpawnedRocks();
 				break;
@@ -162,6 +175,7 @@ public class RuniteRocksPlugin extends Plugin
 				spawnedRocks.clear();
 				return;
 			case LOGGED_IN:
+				isHopping = false;
 				break;
 			default:
 				return;
