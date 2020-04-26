@@ -200,7 +200,7 @@ public class TableRow extends JPanel
 		{
 			Instant respawn = runiteRock.getRespawnTime();
 			respawnLabel = new JLabel(TIME_FORMATTER.format(Date.from(respawn)));
-			if (runiteRock.getDepletedAt() == null)
+			if (!runiteRock.hasWitnessedDepletion())
 			{
 				respawnLabel.setForeground(ColorScheme.BRAND_ORANGE);
 			}

@@ -25,8 +25,10 @@
 package thestonedturtle.runiterocks;
 
 import java.time.Instant;
-import javax.annotation.Nullable;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.http.api.worlds.World;
 
@@ -37,9 +39,11 @@ public class RuniteRock
 	private final World world;
 	private final Rock rock;
 	private boolean available = false;
-	@Nullable
-	private Instant depletedAt = null;
+	private Instant updatedAt = Instant.now();
 	private Instant lastSeenAt = Instant.now();
+	@Getter(AccessLevel.NONE)
+	@Setter(AccessLevel.NONE)
+	private boolean witnessedDepletion = false;
 
 	public Instant getRespawnTime()
 	{
@@ -48,14 +52,7 @@ public class RuniteRock
 			return lastSeenAt;
 		}
 
-		// We can't be sure when this will respawn if its not available and we don't know when it was depleted
-		// We can safely assume its between when we last saw it plus the respawn duration
-		if (depletedAt == null)
-		{
-			return lastSeenAt.plus(rock.getRespawnDuration());
-		}
-
-		return depletedAt.plus(rock.getRespawnDuration());
+		return updatedAt.plus(rock.getRespawnDuration());
 	}
 
 	public void setAvailable(final int gameObjectId)
@@ -70,18 +67,26 @@ public class RuniteRock
 			}
 
 			available = true;
-			depletedAt = null;
+			updatedAt = Instant.now();
+			witnessedDepletion = false;
 		}
 		else if (gameObjectId == rock.getDepletedState())
 		{
-			// If depleted and wasn't previously available don't set depletedAt as it could be inaccurate
+			// If rocks depleted and wasn't previously available there's no change
 			if (!available)
 			{
+				// If the respawn timer is in the past we need to assume it was updated when we couldn't see it.
+				if (getRespawnTime().compareTo(Instant.now()) < 0)
+				{
+					updatedAt = Instant.now();
+					witnessedDepletion = false;
+				}
 				return;
 			}
 
-			depletedAt = Instant.now();
 			available = false;
+			updatedAt = Instant.now();
+			witnessedDepletion = true;
 		}
 		else
 		{
@@ -92,5 +97,10 @@ public class RuniteRock
 	public boolean matches(final RuniteRock other)
 	{
 		return this.getRock() == other.getRock() && this.getWorld().getId() == other.getWorld().getId();
+	}
+
+	public boolean hasWitnessedDepletion()
+	{
+		return witnessedDepletion;
 	}
 }
