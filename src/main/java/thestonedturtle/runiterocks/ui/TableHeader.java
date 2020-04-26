@@ -40,6 +40,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
+import lombok.NonNull;
 import net.runelite.client.plugins.worldhopper.WorldHopperPlugin;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.FontManager;
@@ -75,7 +76,7 @@ public class TableHeader extends JPanel
 	// Determines if this header column is being used to order the list
 	private boolean ordering = false;
 
-	public TableHeader(String title, boolean ordered, boolean ascending, @Nonnull Runnable onRefresh)
+	public TableHeader(String title, boolean ordered, boolean ascending, @Nonnull Runnable onRefresh, @NonNull Runnable onClear)
 	{
 		setLayout(new BorderLayout(5, 0));
 		setBorder(new CompoundBorder(
@@ -115,9 +116,16 @@ public class TableHeader extends JPanel
 			onRefresh.run();
 		});
 
+		final JMenuItem clear = new JMenuItem("Clear all");
+		clear.addActionListener(e ->
+		{
+			onClear.run();
+		});
+
 		final JPopupMenu popupMenu = new JPopupMenu();
 		popupMenu.setBorder(new EmptyBorder(5, 5, 5, 5));
 		popupMenu.add(refresh);
+		popupMenu.add(clear);
 
 		textLabel.setComponentPopupMenu(popupMenu);
 		setComponentPopupMenu(popupMenu);

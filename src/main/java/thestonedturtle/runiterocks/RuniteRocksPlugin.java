@@ -450,4 +450,24 @@ public class RuniteRocksPlugin extends Plugin
 
 		SwingUtilities.invokeLater(panel::updateList);
 	}
+
+	void removeRock(final int world, final Rock rock)
+	{
+		final WorldTracker track = worldMap.get(world);
+		if (track == null)
+		{
+			return;
+		}
+
+		track.removeRock(rock);
+		SwingUtilities.invokeLater(panel::populate);
+	}
+
+	void clearRocks()
+	{
+		worldMap.clear();
+		tracker.clear();
+		worldMap.put(client.getWorld(), tracker);
+		SwingUtilities.invokeLater(panel::populate);
+	}
 }

@@ -36,6 +36,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
 import java.util.EnumSet;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -48,6 +49,7 @@ import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.FontManager;
 import net.runelite.http.api.worlds.World;
 import net.runelite.http.api.worlds.WorldType;
+import thestonedturtle.runiterocks.Rock;
 import thestonedturtle.runiterocks.RuniteRock;
 import thestonedturtle.runiterocks.RuniteRocksPanel;
 
@@ -86,7 +88,7 @@ public class TableRow extends JPanel
 	private Color lastBackground;
 	private boolean current = false;
 
-	public TableRow(World world, RuniteRock rock, Consumer<World> hopToWorld, boolean respawnCounter, boolean visitCounter)
+	public TableRow(World world, RuniteRock rock, Consumer<World> hopToWorld, BiConsumer<Integer, Rock> removeRock, boolean respawnCounter, boolean visitCounter)
 	{
 		this.world = world;
 		this.runiteRock = rock;
@@ -145,14 +147,15 @@ public class TableRow extends JPanel
 		add(rightSide, BorderLayout.CENTER);
 
 		final JMenuItem hopTo = new JMenuItem("Hop-to world");
-		hopTo.addActionListener(e ->
-		{
-			hopToWorld.accept(world);
-		});
+		hopTo.addActionListener(e -> hopToWorld.accept(world));
+
+		final JMenuItem remove = new JMenuItem("Remove entry");
+		remove.addActionListener(e -> removeRock.accept(world.getId(), runiteRock.getRock()));
 
 		final JPopupMenu popupMenu = new JPopupMenu();
 		popupMenu.setBorder(new EmptyBorder(5, 5, 5, 5));
 		popupMenu.add(hopTo);
+		popupMenu.add(remove);
 
 		setComponentPopupMenu(popupMenu);
 	}

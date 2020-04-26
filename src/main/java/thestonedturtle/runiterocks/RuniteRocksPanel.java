@@ -219,7 +219,7 @@ public class RuniteRocksPanel extends PluginPanel
 		JPanel leftSide = new JPanel(new BorderLayout());
 		JPanel rightSide = new JPanel(new BorderLayout());
 
-		worldHeader = new TableHeader("World", sortOrder == ListOrdering.WORLD, ascendingOrder, this::populate);
+		worldHeader = new TableHeader("World", sortOrder == ListOrdering.WORLD, ascendingOrder, this::populate, plugin::clearRocks);
 		worldHeader.setPreferredSize(new Dimension(WORLD_COLUMN_WIDTH, HEADER_HEIGHT));
 		worldHeader.addMouseListener(new MouseAdapter()
 		{
@@ -235,7 +235,7 @@ public class RuniteRocksPanel extends PluginPanel
 			}
 		});
 
-		locationHeader = new TableHeader("Loc", sortOrder == ListOrdering.LOCATION, ascendingOrder, this::populate);
+		locationHeader = new TableHeader("Loc", sortOrder == ListOrdering.LOCATION, ascendingOrder, this::populate, plugin::clearRocks);
 		locationHeader.setPreferredSize(new Dimension(LOCATION_COLUMN_WIDTH, HEADER_HEIGHT));
 		locationHeader.addMouseListener(new MouseAdapter()
 		{
@@ -251,7 +251,7 @@ public class RuniteRocksPanel extends PluginPanel
 			}
 		});
 
-		respawnHeader = new TableHeader("Respawn", sortOrder == ListOrdering.RESPAWN_TIME, ascendingOrder, this::populate);
+		respawnHeader = new TableHeader("Respawn", sortOrder == ListOrdering.RESPAWN_TIME, ascendingOrder, this::populate, plugin::clearRocks);
 		respawnHeader.setPreferredSize(new Dimension(TIME_COLUMN_WIDTH, HEADER_HEIGHT));
 		respawnHeader.addMouseListener(new MouseAdapter()
 		{
@@ -267,7 +267,7 @@ public class RuniteRocksPanel extends PluginPanel
 			}
 		});
 
-		lastVisitHeader = new TableHeader("Last Visit", sortOrder == ListOrdering.LAST_VISITED, ascendingOrder, this::populate);
+		lastVisitHeader = new TableHeader("Last Visit", sortOrder == ListOrdering.LAST_VISITED, ascendingOrder, this::populate, plugin::clearRocks);
 		lastVisitHeader.addMouseListener(new MouseAdapter()
 		{
 			@Override
@@ -299,7 +299,7 @@ public class RuniteRocksPanel extends PluginPanel
 	 */
 	private TableRow buildRow(World world, boolean current, RuniteRock rock)
 	{
-		TableRow row = new TableRow(world, rock, plugin::hopToWorld, plugin.config.respawnCounter(), plugin.config.visitCounter());
+		TableRow row = new TableRow(world, rock, plugin::hopToWorld, plugin::removeRock, plugin.config.respawnCounter(), plugin.config.visitCounter());
 		row.setCurrent(current);
 
 		return row;

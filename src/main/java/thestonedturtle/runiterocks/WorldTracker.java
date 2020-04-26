@@ -62,6 +62,16 @@ public class WorldTracker
 		return runeRock;
 	}
 
+	public void removeRock(final Rock rock)
+	{
+		rockMap.remove(rock);
+	}
+
+	public void clear()
+	{
+		rockMap.clear();
+	}
+
 	public Collection<RuniteRock> getRuniteRocks()
 	{
 		return rockMap.values();
