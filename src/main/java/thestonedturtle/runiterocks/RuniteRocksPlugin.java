@@ -92,6 +92,8 @@ public class RuniteRocksPlugin extends Plugin
 		return configManager.getConfig(RuniteRocksConfig.class);
 	}
 
+	// Rocks that were spawned and not despawned should have their last visited time updated when hopping or logging out
+	private final Map<WorldPoint, GameObject> spawnedRocks = new HashMap<>();
 	private final Map<WorldPoint, GameObject> queue = new HashMap<>();
 	@Getter
 	private final Map<Integer, WorldTracker> worldMap = new HashMap<>();
@@ -140,6 +142,7 @@ public class RuniteRocksPlugin extends Plugin
 		queue.clear();
 		worldMap.clear();
 		tracker = null;
+		spawnedRocks.clear();
 	}
 
 	@Subscribe
@@ -147,10 +150,18 @@ public class RuniteRocksPlugin extends Plugin
 	{
 		switch (gameStateChanged.getGameState())
 		{
-			case LOGGING_IN:
 			case LOADING:
-			case LOGGED_IN:
+				spawnedRocks.clear();
+				break;
 			case HOPPING:
+			case LOGIN_SCREEN:
+				processSpawnedRocks();
+				break;
+			case LOGGING_IN:
+			case CONNECTION_LOST:
+				spawnedRocks.clear();
+				return;
+			case LOGGED_IN:
 				break;
 			default:
 				return;
@@ -261,25 +272,46 @@ public class RuniteRocksPlugin extends Plugin
 			}
 		}
 
-		// Queue processing
-		if (tracker == null || queue.size() == 0)
+		if (tracker != null && queue.size() > 0)
+		{
+			final Collection<RuniteRock> rocks = new ArrayList<>();
+			for (final Map.Entry<WorldPoint, GameObject> entry : queue.entrySet())
+			{
+				final RuniteRock rock = tracker.updateRockState(entry.getKey(), entry.getValue());
+				if (rock == null)
+				{
+					log.warn("Error updating rock state: {} | {}", entry.getKey(), entry.getValue());
+					continue;
+				}
+				rocks.add(rock);
+				spawnedRocks.put(entry.getKey(), entry.getValue());
+			}
+
+			queue.clear();
+			SwingUtilities.invokeLater(() -> panel.updateRuniteRocks(rocks));
+		}
+	}
+
+	private void processSpawnedRocks()
+	{
+		if (spawnedRocks.size() == 0)
 		{
 			return;
 		}
 
 		final Collection<RuniteRock> rocks = new ArrayList<>();
-		for (final Map.Entry<WorldPoint, GameObject> entry : queue.entrySet())
+		for (final Map.Entry<WorldPoint, GameObject> entry : spawnedRocks.entrySet())
 		{
 			final RuniteRock rock = tracker.updateRockState(entry.getKey(), entry.getValue());
 			if (rock == null)
 			{
-				log.warn("Error updating rock state: {} | {}", entry.getKey(), entry.getValue());
+				log.warn("Error updating spawned rock state: {} | {}", entry.getKey(), entry.getValue());
 				continue;
 			}
 			rocks.add(rock);
 		}
 
-		queue.clear();
+		spawnedRocks.clear();
 		SwingUtilities.invokeLater(() -> panel.updateRuniteRocks(rocks));
 	}
 
