@@ -35,8 +35,11 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Date;
 import java.util.EnumSet;
+import java.util.function.Consumer;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.border.EmptyBorder;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -80,7 +83,7 @@ public class TableRow extends JPanel
 	private Color lastBackground;
 	private boolean current = false;
 
-	public TableRow(World world, RuniteRock rock)
+	public TableRow(World world, RuniteRock rock, Consumer<World> hopToWorld)
 	{
 		this.world = world;
 		this.runiteRock = rock;
@@ -135,6 +138,18 @@ public class TableRow extends JPanel
 
 		add(leftSide, BorderLayout.WEST);
 		add(rightSide, BorderLayout.CENTER);
+
+		final JMenuItem hopTo = new JMenuItem("Hop-to world");
+		hopTo.addActionListener(e ->
+		{
+			hopToWorld.accept(world);
+		});
+
+		final JPopupMenu popupMenu = new JPopupMenu();
+		popupMenu.setBorder(new EmptyBorder(5, 5, 5, 5));
+		popupMenu.add(hopTo);
+
+		setComponentPopupMenu(popupMenu);
 	}
 
 	/**

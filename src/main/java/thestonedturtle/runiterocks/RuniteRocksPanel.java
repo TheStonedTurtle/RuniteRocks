@@ -294,9 +294,9 @@ public class RuniteRocksPanel extends PluginPanel
 	/**
 	 * Builds a table row, that displays the world's information.
 	 */
-	private static TableRow buildRow(World world, boolean current, RuniteRock rock)
+	private TableRow buildRow(World world, boolean current, RuniteRock rock)
 	{
-		TableRow row = new TableRow(world, rock);
+		TableRow row = new TableRow(world, rock, plugin::hopToWorld);
 		row.setCurrent(current);
 
 		return row;

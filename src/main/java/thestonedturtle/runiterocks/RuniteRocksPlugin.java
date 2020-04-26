@@ -35,15 +35,22 @@ import javax.inject.Inject;
 import javax.swing.SwingUtilities;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameObjectChanged;
 import net.runelite.api.events.GameObjectDespawned;
 import net.runelite.api.events.GameObjectSpawned;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.client.chat.ChatColorType;
+import net.runelite.client.chat.ChatMessageBuilder;
+import net.runelite.client.chat.ChatMessageManager;
+import net.runelite.client.chat.QueuedMessage;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.game.WorldService;
@@ -52,6 +59,7 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.util.ImageUtil;
+import net.runelite.client.util.WorldUtil;
 import net.runelite.http.api.worlds.World;
 import net.runelite.http.api.worlds.WorldResult;
 
@@ -61,6 +69,11 @@ import net.runelite.http.api.worlds.WorldResult;
 )
 public class RuniteRocksPlugin extends Plugin
 {
+	private static final int DISPLAY_SWITCHER_MAX_ATTEMPTS = 3;
+
+	@Inject
+	private ChatMessageManager chatMessageManager;
+
 	@Inject
 	private Client client;
 
@@ -87,6 +100,9 @@ public class RuniteRocksPlugin extends Plugin
 
 	private NavigationButton navButton;
 	private RuniteRocksPanel panel;
+
+	private net.runelite.api.World quickHopTargetWorld;
+	private int displaySwitcherAttempts = 0;
 
 	@Override
 	protected void startUp() throws Exception
@@ -211,6 +227,41 @@ public class RuniteRocksPlugin extends Plugin
 	@Subscribe
 	public void onGameTick(final GameTick tick)
 	{
+		// Quick hoping
+		if (quickHopTargetWorld != null)
+		{
+			if (client.getWidget(WidgetInfo.WORLD_SWITCHER_LIST) == null)
+			{
+				client.openWorldHopper();
+
+				if (++displaySwitcherAttempts >= DISPLAY_SWITCHER_MAX_ATTEMPTS)
+				{
+					String chatMessage = new ChatMessageBuilder()
+						.append(ChatColorType.NORMAL)
+						.append("Failed to hop after ")
+						.append(ChatColorType.HIGHLIGHT)
+						.append(Integer.toString(displaySwitcherAttempts))
+						.append(ChatColorType.NORMAL)
+						.append(" attempts.")
+						.build();
+
+					chatMessageManager
+						.queue(QueuedMessage.builder()
+							.type(ChatMessageType.CONSOLE)
+							.runeLiteFormattedMessage(chatMessage)
+							.build());
+
+					resetQuickHopper();
+				}
+			}
+			else
+			{
+				client.hopToWorld(quickHopTargetWorld);
+				resetQuickHopper();
+			}
+		}
+
+		// Queue processing
 		if (tracker == null || queue.size() == 0)
 		{
 			return;
@@ -232,6 +283,15 @@ public class RuniteRocksPlugin extends Plugin
 		SwingUtilities.invokeLater(() -> panel.updateRuniteRocks(rocks));
 	}
 
+	@Subscribe
+	public void onChatMessage(final ChatMessage event)
+	{
+		if (event.getMessage().equals("Please finish what you're doing before using the World Switcher."))
+		{
+			resetQuickHopper();
+		}
+	}
+
 	@Nullable
 	private World getWorld(final int worldNumber)
 	{
@@ -242,5 +302,68 @@ public class RuniteRocksPlugin extends Plugin
 		}
 
 		return null;
+	}
+
+	void hopToWorld(final World world)
+	{
+		if (client.getGameState() != GameState.LOGGED_IN)
+		{
+			return;
+		}
+
+		if (world.getId() == client.getWorld())
+		{
+			final String chatMessage = new ChatMessageBuilder()
+				.append(ChatColorType.NORMAL)
+				.append("You are already in World ")
+				.append(ChatColorType.HIGHLIGHT)
+				.append(Integer.toString(world.getId()))
+				.build();
+
+			chatMessageManager
+				.queue(QueuedMessage.builder()
+					.type(ChatMessageType.CONSOLE)
+					.runeLiteFormattedMessage(chatMessage)
+					.build());
+			return;
+		}
+
+		final String chatMessage = new ChatMessageBuilder()
+			.append(ChatColorType.NORMAL)
+			.append("Attempting to hop to World ")
+			.append(ChatColorType.HIGHLIGHT)
+			.append(Integer.toString(world.getId()))
+			.append(ChatColorType.NORMAL)
+			.append("..")
+			.build();
+
+		chatMessageManager
+			.queue(QueuedMessage.builder()
+				.type(ChatMessageType.CONSOLE)
+				.runeLiteFormattedMessage(chatMessage)
+				.build());
+
+		quickHopTargetWorld = toRsWorld(world);
+		client.changeWorld(quickHopTargetWorld);
+		displaySwitcherAttempts = 0;
+	}
+
+	private net.runelite.api.World toRsWorld(final World world)
+	{
+		final net.runelite.api.World rsWorld = client.createWorld();
+		rsWorld.setActivity(world.getActivity());
+		rsWorld.setAddress(world.getAddress());
+		rsWorld.setId(world.getId());
+		rsWorld.setPlayerCount(world.getPlayers());
+		rsWorld.setLocation(world.getLocation());
+		rsWorld.setTypes(WorldUtil.toWorldTypes(world.getTypes()));
+
+		return rsWorld;
+	}
+
+	private void resetQuickHopper()
+	{
+		displaySwitcherAttempts = 0;
+		quickHopTargetWorld = null;
 	}
 }
