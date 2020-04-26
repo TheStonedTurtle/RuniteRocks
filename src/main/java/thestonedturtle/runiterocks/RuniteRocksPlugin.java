@@ -189,7 +189,8 @@ public class RuniteRocksPlugin extends Plugin
 				return;
 			}
 
-			panel.switchCurrentHighlight(currentWorld, tracker.getWorld().getId());
+			final int oldWorld = tracker.getWorld().getId();
+			SwingUtilities.invokeLater(() -> panel.switchCurrentHighlight(currentWorld, oldWorld));
 		}
 
 		final World world = getWorld(currentWorld);
