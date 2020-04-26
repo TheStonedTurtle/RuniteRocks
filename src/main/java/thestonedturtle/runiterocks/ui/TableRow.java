@@ -32,6 +32,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
 import java.util.EnumSet;
@@ -69,13 +70,15 @@ public class TableRow extends JPanel
 	private JLabel worldLabel;
 	private JLabel locationLabel;
 
-	private JLabel respawnLabel;
-	private JLabel lastVisitedLabel;
+	private final JLabel respawnLabel = new JLabel();
+	private final JLabel lastVisitedLabel = new JLabel();
 
 	@Getter
 	private final World world;
 	@Getter
 	private final RuniteRock runiteRock;
+	private final boolean respawnCounter;
+	private final boolean visitCounter;
 
 	@Getter(AccessLevel.PACKAGE)
 	private int updatedPlayerCount;
@@ -83,11 +86,13 @@ public class TableRow extends JPanel
 	private Color lastBackground;
 	private boolean current = false;
 
-	public TableRow(World world, RuniteRock rock, Consumer<World> hopToWorld)
+	public TableRow(World world, RuniteRock rock, Consumer<World> hopToWorld, boolean respawnCounter, boolean visitCounter)
 	{
 		this.world = world;
 		this.runiteRock = rock;
 		this.updatedPlayerCount = world.getPlayers();
+		this.respawnCounter = respawnCounter;
+		this.visitCounter = visitCounter;
 
 		setLayout(new BorderLayout());
 		setBorder(new EmptyBorder(2, 0, 2, 0));
@@ -191,25 +196,42 @@ public class TableRow extends JPanel
 		final JPanel column = new JPanel(new BorderLayout());
 		column.setBorder(new EmptyBorder(0, 5, 0, 5));
 
-		if (runiteRock.isAvailable())
-		{
-			respawnLabel = new JLabel("Available");
-			respawnLabel.setForeground(CURRENT_WORLD);
-		}
-		else
-		{
-			Instant respawn = runiteRock.getRespawnTime();
-			respawnLabel = new JLabel(TIME_FORMATTER.format(Date.from(respawn)));
-			if (!runiteRock.hasWitnessedDepletion())
-			{
-				respawnLabel.setForeground(ColorScheme.BRAND_ORANGE);
-			}
-		}
-
 		respawnLabel.setFont(FontManager.getRunescapeSmallFont());
+		updateRespawnLabel();
+
 		column.add(respawnLabel, BorderLayout.WEST);
 
 		return column;
+	}
+
+	private void updateRespawnLabel()
+	{
+		if (runiteRock.isAvailable())
+		{
+			respawnLabel.setText("Available");
+			respawnLabel.setForeground(CURRENT_WORLD);
+			return;
+		}
+
+		final Instant respawn = runiteRock.getRespawnTime();
+		if (respawnCounter)
+		{
+			final Duration seconds = Duration.between(respawn, Instant.now());
+			String timer = seconds.isNegative() ? "-" : "";
+			timer += getReadableTimeElapsed(seconds).trim();
+			respawnLabel.setText(timer);
+			respawnLabel.setForeground(ColorScheme.DARK_GRAY_COLOR);
+		}
+		else
+		{
+			respawnLabel.setText(TIME_FORMATTER.format(Date.from(respawn)));
+			respawnLabel.setForeground(ColorScheme.DARK_GRAY_COLOR);
+		}
+
+		if (!runiteRock.hasWitnessedDepletion())
+		{
+			respawnLabel.setForeground(ColorScheme.BRAND_ORANGE);
+		}
 	}
 
 	/**
@@ -220,13 +242,34 @@ public class TableRow extends JPanel
 		final JPanel column = new JPanel(new BorderLayout());
 		column.setBorder(new EmptyBorder(0, 5, 0, 5));
 
-		Instant respawn = runiteRock.getLastSeenAt();
-		lastVisitedLabel = new JLabel(respawn == null ? "Unknown" : TIME_FORMATTER.format(Date.from(respawn)));
 		lastVisitedLabel.setFont(FontManager.getRunescapeSmallFont());
+		updateLastVisitedLabel();
 
 		column.add(lastVisitedLabel, BorderLayout.WEST);
 
 		return column;
+	}
+
+	private void updateLastVisitedLabel()
+	{
+		final Instant time = runiteRock.getLastSeenAt();
+		String text;
+		if (time == null)
+		{
+			text = "Unknown";
+		}
+		else if (visitCounter)
+		{
+			final Duration seconds = Duration.between(time, Instant.now());
+			text = seconds.isNegative() ? "-" : "";
+			text += getReadableTimeElapsed(seconds).trim();
+		}
+		else
+		{
+			text = TIME_FORMATTER.format(Date.from(time));
+		}
+
+		lastVisitedLabel.setText(text);
 	}
 
 	public void setCurrent(final boolean current)
@@ -235,6 +278,15 @@ public class TableRow extends JPanel
 		final Color foreground = getWorldColor();
 		worldLabel.setForeground(foreground);
 		locationLabel.setForeground(foreground);
+	}
+
+	public void refresh()
+	{
+		updateRespawnLabel();
+		updateLastVisitedLabel();
+
+		revalidate();
+		repaint();
 	}
 
 	private Color getWorldColor()
@@ -251,5 +303,20 @@ public class TableRow extends JPanel
 		}
 
 		return types.contains(WorldType.MEMBERS) ? MEMBERS_WORLD : FREE_WORLD;
+	}
+
+	private static String getReadableTimeElapsed(final Duration duration)
+	{
+		final double seconds = Math.abs(duration.getSeconds());
+		if (seconds <= 60)
+		{
+			return String.format("%2.0f", seconds) + "s";
+		}
+
+		final double s = seconds % 3600 % 60;
+		final double m = Math.floor(seconds % 3600 / 60);
+		final double h = Math.floor(seconds / 3600);
+
+		return h < 1 ? String.format("%2.0f:%02.0f", m, s) : String.format("%2.0f:%02.0f:%02.0f", h, m, s);
 	}
 }

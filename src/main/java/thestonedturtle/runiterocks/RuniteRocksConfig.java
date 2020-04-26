@@ -4,16 +4,30 @@ import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 
-@ConfigGroup("runiterocks")
+@ConfigGroup(RuniteRocksConfig.GROUP)
 public interface RuniteRocksConfig extends Config
 {
+	String GROUP = "runiterocks";
+
 	@ConfigItem(
-		keyName = "greeting",
-		name = "Welcome Greeting",
-		description = "The message to show to the user when they login"
+		keyName = "respawnCounter",
+		name = "Respawn Counter",
+		description = "<html>If enabled shows a ticking countdown to the respawn time" +
+			"<br/>If disabled shows the time at which the rock should respawn</html>"
 	)
-	default String greeting()
+	default boolean respawnCounter()
 	{
-		return "Hello";
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "visitCounter",
+		name = "Last Visit Counter",
+		description = "<html>If enabled shows a ticking timer for how long since you checked on that rock" +
+			"<br/>If disabled shows the time at which you last checked on that rock</html>"
+	)
+	default boolean visitCounter()
+	{
+		return false;
 	}
 }

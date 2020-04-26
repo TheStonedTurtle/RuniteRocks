@@ -30,6 +30,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.swing.SwingUtilities;
@@ -53,6 +56,7 @@ import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.chat.QueuedMessage;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.WorldService;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
@@ -81,10 +85,15 @@ public class RuniteRocksPlugin extends Plugin
 	private ClientToolbar clientToolbar;
 
 	@Inject
-	private RuniteRocksConfig config;
+	public RuniteRocksConfig config;
 
 	@Inject
 	private WorldService worldService;
+
+	@Inject
+	private ScheduledExecutorService executorService;
+
+	private ScheduledFuture panelUpdateFuture;
 
 	@Provides
 	RuniteRocksConfig provideConfig(ConfigManager configManager)
@@ -138,11 +147,18 @@ public class RuniteRocksPlugin extends Plugin
 		}
 
 		isHopping = client.getGameState().equals(GameState.HOPPING);
+
+		panelUpdateFuture = executorService.scheduleAtFixedRate(this::updatePanel, 1000, 500, TimeUnit.MILLISECONDS);
 	}
 
 	@Override
 	protected void shutDown() throws Exception
 	{
+		if (panelUpdateFuture != null)
+		{
+			panelUpdateFuture.cancel(true);
+			panelUpdateFuture = null;
+		}
 		clientToolbar.removeNavigation(navButton);
 		panel = null;
 		queue.clear();
@@ -307,6 +323,17 @@ public class RuniteRocksPlugin extends Plugin
 		}
 	}
 
+	@Subscribe
+	public void onConfigChanged(final ConfigChanged e)
+	{
+		if (!e.getGroup().equals(config.GROUP))
+		{
+			return;
+		}
+
+		SwingUtilities.invokeLater(panel::populate);
+	}
+
 	private void processSpawnedRocks()
 	{
 		if (spawnedRocks.size() == 0)
@@ -412,5 +439,15 @@ public class RuniteRocksPlugin extends Plugin
 	{
 		displaySwitcherAttempts = 0;
 		quickHopTargetWorld = null;
+	}
+
+	private void updatePanel()
+	{
+		if (tracker == null || panel.getRows().size() == 0)
+		{
+			return;
+		}
+
+		SwingUtilities.invokeLater(panel::updateList);
 	}
 }

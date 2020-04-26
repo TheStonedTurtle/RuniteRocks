@@ -38,6 +38,7 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import lombok.Getter;
 import net.runelite.client.ui.DynamicGridLayout;
 import net.runelite.client.ui.PluginPanel;
 import net.runelite.http.api.worlds.World;
@@ -54,6 +55,7 @@ public class RuniteRocksPanel extends PluginPanel
 	public static final int TIME_COLUMN_WIDTH = 70;
 	private static final int HEADER_HEIGHT = 20;
 
+	@Getter
 	private final List<TableRow> rows = new ArrayList<>();
 	private final JPanel listContainer = new JPanel();
 	private final RuniteRocksPlugin plugin;
@@ -130,7 +132,7 @@ public class RuniteRocksPanel extends PluginPanel
 		rows.add(buildRow(runeRock.getWorld(), currentWorld, runeRock));
 	}
 
-	private void populate()
+	public void populate()
 	{
 		rows.clear();
 
@@ -179,6 +181,7 @@ public class RuniteRocksPanel extends PluginPanel
 		for (TableRow row : rows)
 		{
 			listContainer.add(row);
+			row.refresh();
 		}
 
 		listContainer.revalidate();
@@ -296,7 +299,7 @@ public class RuniteRocksPanel extends PluginPanel
 	 */
 	private TableRow buildRow(World world, boolean current, RuniteRock rock)
 	{
-		TableRow row = new TableRow(world, rock, plugin::hopToWorld);
+		TableRow row = new TableRow(world, rock, plugin::hopToWorld, plugin.config.respawnCounter(), plugin.config.visitCounter());
 		row.setCurrent(current);
 
 		return row;
