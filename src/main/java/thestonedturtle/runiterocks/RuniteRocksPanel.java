@@ -34,7 +34,6 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.Function;
 import javax.annotation.Nullable;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -215,17 +214,6 @@ public class RuniteRocksPanel extends PluginPanel
 
 		listContainer.revalidate();
 		listContainer.repaint();
-	}
-
-	private int getCompareValue(TableRow r1, TableRow r2, Function<TableRow, Comparable> compareByFn)
-	{
-		Ordering<Comparable> ordering = Ordering.natural();
-		if (!ascendingOrder)
-		{
-			ordering = ordering.reverse();
-		}
-		ordering = ordering.nullsLast();
-		return ordering.compare(compareByFn.apply(r1), compareByFn.apply(r2));
 	}
 
 	private void orderBy(final ListOrdering order)
