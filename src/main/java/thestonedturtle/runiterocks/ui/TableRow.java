@@ -62,6 +62,7 @@ public class TableRow extends JPanel
 	private static final int LOCATION_COLUMN_WIDTH = RuniteRocksPanel.LOCATION_COLUMN_WIDTH;
 	private static final int TIME_COLUMN_WIDTH = RuniteRocksPanel.TIME_COLUMN_WIDTH;
 
+	private static final Color RUNITE_COLOR = new Color(113, 160, 167);
 	private static final Color CURRENT_WORLD = new Color(66, 227, 17);
 	private static final Color DANGEROUS_WORLD = new Color(251, 62, 62);
 	private static final Color MEMBERS_WORLD = new Color(210, 193, 53);
@@ -212,7 +213,7 @@ public class TableRow extends JPanel
 		if (runiteRock.isAvailable())
 		{
 			respawnLabel.setText("Available");
-			respawnLabel.setForeground(CURRENT_WORLD);
+			respawnLabel.setForeground(RUNITE_COLOR);
 			return;
 		}
 
