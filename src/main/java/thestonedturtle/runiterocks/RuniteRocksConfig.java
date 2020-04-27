@@ -43,4 +43,15 @@ public interface RuniteRocksConfig extends Config
 	{
 		return false;
 	}
+
+	@ConfigItem(
+		position = 3,
+		keyName = "ignoreInaccurate",
+		name = "Ignore Inaccurate",
+		description = "<html>Should rocks that are inaccurate be ignored from the tracker?</html>"
+	)
+	default boolean ignoreInaccurate()
+	{
+		return false;
+	}
 }

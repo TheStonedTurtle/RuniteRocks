@@ -205,6 +205,10 @@ public class RuniteRocksPanel extends PluginPanel
 
 		for (TableRow row : rows)
 		{
+			if (plugin.config.ignoreInaccurate() && !(row.getRuniteRock().hasWitnessedDepletion() || row.getRuniteRock().isAvailable()))
+			{
+				continue;
+			}
 			listContainer.add(row);
 			row.refresh();
 		}
