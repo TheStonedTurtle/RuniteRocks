@@ -10,6 +10,7 @@ public interface RuniteRocksConfig extends Config
 	String GROUP = "runiterocks";
 
 	@ConfigItem(
+		position = 0,
 		keyName = "respawnCounter",
 		name = "Respawn Counter",
 		description = "<html>If enabled shows a ticking countdown to the respawn time" +
@@ -21,6 +22,7 @@ public interface RuniteRocksConfig extends Config
 	}
 
 	@ConfigItem(
+		position = 1,
 		keyName = "visitCounter",
 		name = "Last Visit Counter",
 		description = "<html>If enabled shows a ticking timer for how long since you checked on that rock" +
