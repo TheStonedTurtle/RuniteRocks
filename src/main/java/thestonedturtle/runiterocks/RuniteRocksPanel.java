@@ -152,30 +152,55 @@ public class RuniteRocksPanel extends PluginPanel
 
 	public void updateList()
 	{
-		rows.sort((r1, r2) ->
+		Ordering<TableRow> ordering = new Ordering<TableRow>()
 		{
-			Function<TableRow, Comparable> compareByFn;
-			switch (sortOrder)
+			@Override
+			public int compare(@Nullable TableRow r1, @Nullable TableRow r2)
 			{
-				case WORLD:
-					compareByFn = row -> row.getWorld().getId();
-					break;
-				case LOCATION:
-					compareByFn = row -> row.getRuniteRock().getRock();
-					break;
-				case RESPAWN_TIME:
-					compareByFn = row -> row.getRuniteRock().getRespawnTime();
-					break;
-				case LAST_VISITED:
-					compareByFn = row -> row.getRuniteRock().getLastSeenAt();
-					break;
-				default:
+				// ordering.nullsLast() handles these
+				if (r1 == null || r2 == null)
+				{
 					return 0;
+				}
+
+				switch (sortOrder)
+				{
+					case WORLD:
+						return Integer.compare(r1.getRuniteRock().getWorld().getId(), r2.getRuniteRock().getWorld().getId());
+					case LOCATION:
+						return r1.getRuniteRock().getRock().compareTo(r2.getRuniteRock().getRock());
+					case RESPAWN_TIME:
+						// Accurate timers should be prioritized, if both times are accurate use normal comparison.
+						if (plugin.config.accurateRespawnPriority())
+						{
+							final boolean r1Accurate = r1.getRuniteRock().hasWitnessedDepletion() || r1.getRuniteRock().isAvailable();
+							final boolean r2Accurate = r2.getRuniteRock().hasWitnessedDepletion() || r2.getRuniteRock().isAvailable();
+							if (r1Accurate && !r2Accurate)
+							{
+								return -1;
+							}
+							else if (!r1Accurate && r2Accurate)
+							{
+								return 1;
+							}
+						}
+
+						return r1.getRuniteRock().getRespawnTime().compareTo(r2.getRuniteRock().getRespawnTime());
+					case LAST_VISITED:
+						return r1.getRuniteRock().getLastSeenAt().compareTo(r2.getRuniteRock().getLastSeenAt());
+					default:
+						return 0;
+				}
 			}
+		};
 
-			return getCompareValue(r1, r2, compareByFn);
-		});
+		if (!ascendingOrder)
+		{
+			ordering = ordering.reverse();
+		}
+		ordering = ordering.nullsLast();
 
+		rows.sort(ordering);
 		listContainer.removeAll();
 
 		for (TableRow row : rows)

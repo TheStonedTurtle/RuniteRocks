@@ -32,4 +32,15 @@ public interface RuniteRocksConfig extends Config
 	{
 		return false;
 	}
+
+	@ConfigItem(
+		position = 2,
+		keyName = "accurateRespawnPriority",
+		name = "Accurate Respawn Priority",
+		description = "<html>When enabled and sorting by respawn time Accurate times will be prioritized over Inaccurate times</html>"
+	)
+	default boolean accurateRespawnPriority()
+	{
+		return false;
+	}
 }
