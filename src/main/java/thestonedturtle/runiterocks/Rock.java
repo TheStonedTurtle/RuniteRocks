@@ -79,6 +79,8 @@ public enum Rock
 	TRAHAEARN_2("PRIF2", "Trahaearn (Prifddinas mine)", new WorldPoint(3287, 12455, 0), ObjectID.ROCKS_36209, ObjectID.ROCKS_36202),
 	TRAHAEARN_3("PRIF3", "Trahaearn (Prifddinas mine)", new WorldPoint(3291, 12441, 0), ObjectID.ROCKS_36209, ObjectID.ROCKS_36202),
 	TRAHAEARN_4("PRIF4", "Trahaearn (Prifddinas mine)", new WorldPoint(3301, 12438, 0), ObjectID.ROCKS_36209, ObjectID.ROCKS_36202),
+
+	ISLE_OF_SOULS("IOSD", "Isles of Souls Dungeon", new WorldPoint(2152, 9301, 0), ObjectID.ROCKS_11376, ObjectID.ROCKS_11390),
 	;
 
 	public static final Duration RESPAWN_TIME = Duration.ofMinutes(12);
