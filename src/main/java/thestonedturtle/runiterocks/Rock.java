@@ -53,8 +53,8 @@ public enum Rock
 	HEROES_GUILD_2("HG2", "Heroe's Guild", new WorldPoint(2937, 9882, 0), ObjectID.ROCKS_11377, ObjectID.ROCKS_11391),
 
 	FROZEN_WASTE_PLATEAU_1("FWP1", "Frozen Waste Plateau (50+ wildy)", new WorldPoint(2948, 3914, 0), ObjectID.ROCKS_11376, ObjectID.ROCKS_11390),
-	FROZEN_WASTE_PLATEAU_2("FWP2", "Frozen Waste Plateau (50+ wildy)",new WorldPoint(2964, 3933, 0), ObjectID.ROCKS_11376, ObjectID.ROCKS_11390),
-	FROZEN_WASTE_PLATEAU_3("FWP3", "Frozen Waste Plateau (50+ wildy)",new WorldPoint(2976, 3937, 0), ObjectID.ROCKS_11377, ObjectID.ROCKS_11391),
+	FROZEN_WASTE_PLATEAU_2("FWP2", "Frozen Waste Plateau (50+ wildy)", new WorldPoint(2964, 3933, 0), ObjectID.ROCKS_11376, ObjectID.ROCKS_11390),
+	FROZEN_WASTE_PLATEAU_3("FWP3", "Frozen Waste Plateau (50+ wildy)", new WorldPoint(2976, 3937, 0), ObjectID.ROCKS_11377, ObjectID.ROCKS_11391),
 
 	LAVA_MAZE_DUNGEON("LMD", "Lava Maze Dungeon", new WorldPoint(3046, 10265, 0), ObjectID.ROCKS_11376, ObjectID.ROCKS_11390),
 
@@ -92,7 +92,7 @@ public enum Rock
 		{
 			set.put(rock.getWorldPoint(), rock);
 		}
-		 ROCK_LOCATIONS = set.build();
+		ROCK_LOCATIONS = set.build();
 	}
 
 	private final String name;
