@@ -316,7 +316,7 @@ public class RuniteRocksPanel extends PluginPanel
 	 */
 	private TableRow buildRow(World world, boolean current, RuniteRock rock)
 	{
-		TableRow row = new TableRow(world, rock, plugin::hopToWorld, plugin::removeRock, plugin.config.respawnCounter(), plugin.config.visitCounter());
+		TableRow row = new TableRow(world, rock, plugin::hopToWorld, plugin::removeRock, plugin.config.respawnCounter(), plugin.config.visitCounter(), plugin);
 		row.setCurrent(current);
 
 		return row;
