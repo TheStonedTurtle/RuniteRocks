@@ -90,7 +90,7 @@ public class TableRow extends JPanel
 	private Color lastBackground;
 	private boolean current = false;
 
-	private long lastTimeClicked;
+	private long lastTimeClicked = System.currentTimeMillis();
 
 	public TableRow(World world, RuniteRock rock, Consumer<World> hopToWorld, BiConsumer<Integer, Rock> removeRock, boolean respawnCounter, boolean visitCounter, boolean doubleLeftClickToHop)
 	{
