@@ -123,7 +123,7 @@ public class TableRow extends JPanel
 			@Override
 			public void mouseClicked(MouseEvent mouseEvent)
 			{
-				if (plugin.config.doubleLeftClickToHop()) 
+				if (doubleLeftClickToHop) 
 				{
 					if ((System.currentTimeMillis - lastTimeClicked) <= 500)
 						hopToWorld.accept(world);
