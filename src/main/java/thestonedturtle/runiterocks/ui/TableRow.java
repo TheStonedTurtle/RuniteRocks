@@ -82,7 +82,7 @@ public class TableRow extends JPanel
 	private final RuniteRock runiteRock;
 	private final boolean respawnCounter;
 	private final boolean visitCounter;
-	private final RuniteRocksPlugin plugin;
+	private final boolean doubleLeftClickToHop;
 
 	@Getter(AccessLevel.PACKAGE)
 	private int updatedPlayerCount;
@@ -92,14 +92,14 @@ public class TableRow extends JPanel
 
 	private long lastTimeClicked;
 
-	public TableRow(World world, RuniteRock rock, Consumer<World> hopToWorld, BiConsumer<Integer, Rock> removeRock, boolean respawnCounter, boolean visitCounter, RuniteRocksPlugin plugin)
+	public TableRow(World world, RuniteRock rock, Consumer<World> hopToWorld, BiConsumer<Integer, Rock> removeRock, boolean respawnCounter, boolean visitCounter, boolean doubleLeftClickToHop)
 	{
-		this.plugin = plugin;
 		this.world = world;
 		this.runiteRock = rock;
 		this.updatedPlayerCount = world.getPlayers();
 		this.respawnCounter = respawnCounter;
 		this.visitCounter = visitCounter;
+		this.doubleLeftClickToHop = doubleLeftClickToHop;
 
 		setLayout(new BorderLayout());
 		setBorder(new EmptyBorder(2, 0, 2, 0));
@@ -123,13 +123,12 @@ public class TableRow extends JPanel
 			@Override
 			public void mouseClicked(MouseEvent mouseEvent)
 			{
-				if (plugin.config.leftClickToHop()) {
-					hopToWorld.accept(world);
-				} else if (plugin.config.doubleLeftClickToHop()) {
+				if (plugin.config.doubleLeftClickToHop()) 
+				{
 					if ((System.currentTimeMillis - lastTimeClicked) <= 500)
 						hopToWorld.accept(world);
-					lastTimeClicked = System.currentTimeMillis();
 				}
+				lastTimeClicked = System.currentTimeMillis();
 			}
 		});
 
