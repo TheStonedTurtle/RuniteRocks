@@ -82,7 +82,6 @@ public class TableRow extends JPanel
 	private final RuniteRock runiteRock;
 	private final boolean respawnCounter;
 	private final boolean visitCounter;
-	private final boolean doubleLeftClickToHop;
 
 	@Getter(AccessLevel.PACKAGE)
 	private int updatedPlayerCount;
@@ -99,7 +98,6 @@ public class TableRow extends JPanel
 		this.updatedPlayerCount = world.getPlayers();
 		this.respawnCounter = respawnCounter;
 		this.visitCounter = visitCounter;
-		this.doubleLeftClickToHop = doubleLeftClickToHop;
 
 		setLayout(new BorderLayout());
 		setBorder(new EmptyBorder(2, 0, 2, 0));
@@ -123,10 +121,8 @@ public class TableRow extends JPanel
 			@Override
 			public void mouseClicked(MouseEvent mouseEvent)
 			{
-				if (doubleLeftClickToHop) 
-				{
-					if ((System.currentTimeMillis - lastTimeClicked) <= 500)
-						hopToWorld.accept(world);
+				if (doubleLeftClickToHop && (System.currentTimeMillis() - lastTimeClicked) <= 500) {
+					hopToWorld.accept(world);
 				}
 				lastTimeClicked = System.currentTimeMillis();
 			}
