@@ -54,4 +54,15 @@ public interface RuniteRocksConfig extends Config
 	{
 		return false;
 	}
+
+	@ConfigItem(
+		position = 4,
+		keyName = "doubleClickToHop",
+		name = "Hop on double click",
+		description = "<html>Do you want to hop worlds when double left clicking an entry in the table?</html>"
+	)
+	default boolean doubleLeftClickToHop()
+	{
+		return true;
+	}
 }

@@ -89,7 +89,9 @@ public class TableRow extends JPanel
 	private Color lastBackground;
 	private boolean current = false;
 
-	public TableRow(World world, RuniteRock rock, Consumer<World> hopToWorld, BiConsumer<Integer, Rock> removeRock, boolean respawnCounter, boolean visitCounter)
+	private long lastTimeClicked = System.currentTimeMillis();
+
+	public TableRow(World world, RuniteRock rock, Consumer<World> hopToWorld, BiConsumer<Integer, Rock> removeRock, boolean respawnCounter, boolean visitCounter, boolean doubleLeftClickToHop)
 	{
 		this.world = world;
 		this.runiteRock = rock;
@@ -114,6 +116,15 @@ public class TableRow extends JPanel
 			public void mouseExited(MouseEvent mouseEvent)
 			{
 				setBackground(lastBackground);
+			}
+
+			@Override
+			public void mouseClicked(MouseEvent mouseEvent)
+			{
+				if (doubleLeftClickToHop && (System.currentTimeMillis() - lastTimeClicked) <= 500) {
+					hopToWorld.accept(world);
+				}
+				lastTimeClicked = System.currentTimeMillis();
 			}
 		});
 
