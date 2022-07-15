@@ -44,7 +44,6 @@ import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ChatMessage;
-import net.runelite.api.events.GameObjectChanged;
 import net.runelite.api.events.GameObjectDespawned;
 import net.runelite.api.events.GameObjectSpawned;
 import net.runelite.api.events.GameStateChanged;
@@ -219,21 +218,6 @@ public class RuniteRocksPlugin extends Plugin
 		tracker = worldMap.getOrDefault(currentWorld, new WorldTracker(world));
 		// Ensure it exists on the map since getOrDefault doesn't do that
 		worldMap.put(currentWorld, tracker);
-	}
-
-	@Subscribe
-	public void onGameObjectChanged(final GameObjectChanged e)
-	{
-		if (tracker == null)
-		{
-			return;
-		}
-
-		final WorldPoint tileLocation = e.getTile().getWorldLocation();
-		if (Rock.getByWorldPoint(tileLocation) != null)
-		{
-			queue.put(tileLocation, e.getGameObject());
-		}
 	}
 
 	@Subscribe
