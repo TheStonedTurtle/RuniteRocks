@@ -1,4 +1,4 @@
-# Runite Rocks [![Plugin Installs](http://img.shields.io/endpoint?url=https://i.pluginhub.info/shields/installs/plugin/runite-rocks)](https://runelite.net/plugin-hub/TheStonedTurtle) [![Plugin Rank](http://img.shields.io/endpoint?url=https://i.pluginhub.info/shields/rank/plugin/runite-rocks)](https://runelite.net/plugin-hub)
+# Runite Rocks [![Plugin Installs](http://img.shields.io/endpoint?url=https://api.runelite.net/pluginhub/shields/installs/plugin/runite-rocks)](https://runelite.net/plugin-hub/TheStonedTurtle) [![Plugin Rank](http://img.shields.io/endpoint?url=https://api.runelite.net/pluginhub/shields/rank/plugin/runite-rocks)](https://runelite.net/plugin-hub)
 Adds a new side panel for tracking Runite ore respawns. Works for all 25 Runite rock spawns in game.
 
 ## How it works
