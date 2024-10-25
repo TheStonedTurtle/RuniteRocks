@@ -48,7 +48,7 @@ import net.runelite.api.events.GameObjectDespawned;
 import net.runelite.api.events.GameObjectSpawned;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
-import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.api.widgets.ComponentID;
 import net.runelite.client.chat.ChatColorType;
 import net.runelite.client.chat.ChatMessageBuilder;
 import net.runelite.client.chat.ChatMessageManager;
@@ -119,11 +119,11 @@ public class RuniteRocksPlugin extends Plugin
 	private boolean isHopping = true;
 
 	@Override
-	protected void startUp() throws Exception
+	protected void startUp()
 	{
 		panel = new RuniteRocksPanel(this);
 
-		final BufferedImage icon = ImageUtil.getResourceStreamFromClass(getClass(), "icon.png");
+		final BufferedImage icon = ImageUtil.loadImageResource(getClass(), "icon.png");
 		navButton = NavigationButton.builder()
 			.tooltip("Runite Rocks")
 			.icon(icon)
@@ -151,7 +151,7 @@ public class RuniteRocksPlugin extends Plugin
 	}
 
 	@Override
-	protected void shutDown() throws Exception
+	protected void shutDown()
 	{
 		if (panelUpdateFuture != null)
 		{
@@ -256,7 +256,7 @@ public class RuniteRocksPlugin extends Plugin
 		// Quick hoping
 		if (quickHopTargetWorld != null)
 		{
-			if (client.getWidget(WidgetInfo.WORLD_SWITCHER_LIST) == null)
+			if (client.getWidget(ComponentID.WORLD_SWITCHER_WORLD_LIST) == null)
 			{
 				client.openWorldHopper();
 
@@ -287,7 +287,7 @@ public class RuniteRocksPlugin extends Plugin
 			}
 		}
 
-		if (tracker != null && queue.size() > 0)
+		if (tracker != null && !queue.isEmpty())
 		{
 			final Collection<RuniteRock> rocks = new ArrayList<>();
 			for (final Map.Entry<WorldPoint, GameObject> entry : queue.entrySet())
@@ -320,7 +320,7 @@ public class RuniteRocksPlugin extends Plugin
 
 	private void processSpawnedRocks()
 	{
-		if (spawnedRocks.size() == 0)
+		if (spawnedRocks.isEmpty())
 		{
 			return;
 		}
@@ -427,7 +427,7 @@ public class RuniteRocksPlugin extends Plugin
 
 	private void updatePanel()
 	{
-		if (tracker == null || panel.getRows().size() == 0)
+		if (tracker == null || panel.getRows().isEmpty())
 		{
 			return;
 		}
