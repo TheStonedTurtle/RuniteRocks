@@ -81,6 +81,12 @@ public enum Rock
 	TRAHAEARN_4("PRIF4", "Trahaearn (Prifddinas mine)", new WorldPoint(3301, 12438, 0), ObjectID.RUNITE_ROCKS_36209, ObjectID.ROCKS_36202),
 
 	ISLE_OF_SOULS("IOSD", "Isles of Souls Dungeon", new WorldPoint(2152, 9301, 0), ObjectID.RUNITE_ROCKS, ObjectID.ROCKS_11390),
+	
+	RUINS_OF_TAPOYAUIK_1("TAPO1", "Ruins of Tapoyauik", new WorldPoint(1581, 9659, 0), ObjectID.RUNITE_ROCKS_11377, ObjectID.ROCKS_11391),
+	RUINS_OF_TAPOYAUIK_2("TAPO2", "Ruins of Tapoyauik", new WorldPoint(1582, 9660, 0), ObjectID.RUNITE_ROCKS, ObjectID.ROCKS_11390),
+
+	THE_STRANGLEWOOD_MINE("SWM", "The Stranglewood mine", new WorldPoint(1168, 3326, 0), ObjectID.RUNITE_ROCKS, ObjectID.ROCKS_11390),
+
 	;
 
 	public static final Duration RESPAWN_TIME = Duration.ofMinutes(12);
