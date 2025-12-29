@@ -86,6 +86,22 @@ public enum Rock
 
 	THE_STRANGLEWOOD_MINE("SWM", "The Stranglewood mine", new WorldPoint(1168, 3326, 0)),
 
+	// Sailing Islands
+	CHARRED_ISLAND_1("CI1", "Charred Dungeon", new WorldPoint(2635, 8853, 0)),
+	CHARRED_ISLAND_2("CI2", "Charred Dungeon", new WorldPoint(2638, 8844, 0)),
+
+	GRIMSTONE_1("GRIM1", "Grimstone Island", new WorldPoint(2903, 4085, 0)),
+	GRIMSTONE_2("GRIM2", "Grimstone Island", new WorldPoint(2901, 4084, 0)),
+	GRIMSTONE_3("GRIM3", "Grimstone Island", new WorldPoint(2902, 4083, 0)),
+
+	DEEPFIN_POINT_1("DP1", "Deepfin Point (Deepfin mine)", new WorldPoint(2096, 9208, 0)),
+	DEEPFIN_POINT_2("DP2", "Deepfin Point (Deepfin mine)", new WorldPoint(2087, 9203, 0)),
+	DEEPFIN_POINT_3("DP3", "Deepfin Point (Deepfin mine)", new WorldPoint(2086, 9205, 0)),
+	DEEPFIN_POINT_4("DP4", "Deepfin Point (Deepfin mine)", new WorldPoint(2083, 9200, 0)),
+
+	YNYSDAIL_CAVERN_1("YC1", "Ynysdail (Ynysdail cavern)", new WorldPoint(2252, 9883, 0)),
+	YNYSDAIL_CAVERN_2("YC2", "Ynysdail (Ynysdail cavern)", new WorldPoint(2249, 9874, 0)),
+
 	;
 
 	public static final Duration RESPAWN_TIME = Duration.ofMinutes(12);
