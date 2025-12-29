@@ -25,17 +25,26 @@
 package thestonedturtle.runiterocks;
 
 import java.time.Instant;
+import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.gameval.ObjectID;
 import net.runelite.http.api.worlds.World;
 
 @Data
 @Slf4j
 public class RuniteRock
 {
+	private static final Set<Integer> AVAILABLE_ROCK_IDS = Set.of(
+			ObjectID.RUNITEROCK1, ObjectID.RUNITEROCK2, ObjectID.PRIF_MINE_RUNITEROCK1
+	);
+	private static final Set<Integer> DEPLETED_ROCK_IDS = Set.of(
+			ObjectID.ROCKS1, ObjectID.ROCKS2, ObjectID.PRIF_MINE_ROCKS1_EMPTY
+	);
+
 	private final World world;
 	private final Rock rock;
 	private boolean available = false;
@@ -59,7 +68,7 @@ public class RuniteRock
 	{
 		lastSeenAt = Instant.now();
 
-		if (gameObjectId == rock.getActivateState())
+		if (AVAILABLE_ROCK_IDS.contains(gameObjectId))
 		{
 			if (available)
 			{
@@ -70,7 +79,7 @@ public class RuniteRock
 			updatedAt = Instant.now();
 			witnessedDepletion = false;
 		}
-		else if (gameObjectId == rock.getDepletedState())
+		else if (DEPLETED_ROCK_IDS.contains(gameObjectId))
 		{
 			// If rocks depleted and wasn't previously available there's no change
 			if (!available)
